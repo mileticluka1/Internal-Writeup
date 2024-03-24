@@ -40,3 +40,19 @@ HOP RTT      ADDRESS
 OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 12.97 seconds
 ```
+Interesting. No more ports open besite http. This will be web based penetration testing.
+
+## Web application recon
+MANUAL:
+- Index page is showing the default ubuntu-apache page. No significant html comments are made inside
+- robots.txt sitemap.xml php.ini and more files give 404. There must be some directories that are hosting website outside /var/www/html so we will have to switch to automated method or brute forcing directories
+
+AUTOMATED:
+- Using dirbuster we brute forced directories on given server.
+Results:
+```
+/phpmyadmin/ (shows login page of phpmyadmin, not outdated vulnerable version)
+/blog/ (dirbuster detected some basic wordpress directories and files which confirms this is wordpress based website)
+```
+
+While looking at the index page of blog
