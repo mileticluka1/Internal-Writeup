@@ -99,3 +99,23 @@ $
 We got access as `www-data`
 
 ## Internal recon
+So we got the reverse shell which is unstable to use and which i don't recommend for holding onto on longer pentests. So we will stabilise it by running:
+```
+python3 -c 'import pty;pty.spawn("/bin/bash")'
+CTRL + Z
+stty raw -echo; fg
+Press ENTER
+export TERM=xterm
+```
+This would make it more stable and better looking and even more useful.
+By trying to visit `/home` directory we encounter `aubreanna` to which we do not have access to enter. So privilege escalation takes part here.
+We are unable to run `sudo -l` but remember we are www-data. We can download and run linpeas and polkits and more if we don't find anything significant.
+
+With enumerations script and techniques we did not find anything that would help us escalate privileges beside modern vulnerabilities that would be considered cheating as the machine is not intended to be used that way.
+Linpeas-ng leads us to /opt directory with sensitive file containing credentials called wp-save.txt which content is this:
+```
+www-data@internal:/opt$ cat wp-save.txt
+Bill,
+Aubreanna needed these credentials for something later.  Let her know you have them and where they are.
+aubreanna:bubb13guM!@#123
+```
