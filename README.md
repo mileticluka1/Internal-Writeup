@@ -154,7 +154,7 @@ aubreanna@internal:~$ cat jenkins.txt
 Internal Jenkins service is running on 172.17.0.2:8080
 ```
 Let's check if it is still running with netstat.<br>
-`tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN     `
+`tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN     `<br>
 and yes, it is running.<br>
  <br>
 We will have to do ssh tunelling so we can access the internal service that can be only visited through localhost.
