@@ -169,3 +169,9 @@ root:tr0ub13guM!@#123
 ```
 
 ## Final show
+After we stabilize shell with same exact process we can run `su root` and enter the given password and get the final flag:
+```
+root@internal:~# cd ~
+root@internal:~# cat root.txt
+THM{d0ck3r_d3str0y3r}
+```
