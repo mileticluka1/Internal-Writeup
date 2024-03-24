@@ -119,3 +119,21 @@ Bill,
 Aubreanna needed these credentials for something later.  Let her know you have them and where they are.
 aubreanna:bubb13guM!@#123
 ```
+By running `su aubreanna` we are becoming that user!
+Now we will go and examine home directory
+```
+aubreanna@internal:/opt$ cd ~
+aubreanna@internal:~$ ls
+jenkins.txt  snap  user.txt
+aubreanna@internal:~$ cat user.txt
+THM{int3rna1_fl4g_1}
+aubreanna@internal:~$
+```
+Hmm but what is this `jenkins.txt` let's see.
+```
+aubreanna@internal:~$ cat jenkins.txt
+Internal Jenkins service is running on 172.17.0.2:8080
+```
+Let's check if it is still running with netstat.
+`tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN     `
+and yes, it is running.
