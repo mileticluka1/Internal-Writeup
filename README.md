@@ -55,4 +55,20 @@ Results:
 /blog/ (dirbuster detected some basic wordpress directories and files which confirms this is wordpress based website)
 ```
 
-While looking at the index page of blog
+While looking at the index page of blog we only see basic page with twentyseventeen theme. 
+Looking at source code we don't see anything crucial, we can see plugins, themes, some uploads but nothing crucial.
+As I checked for robots.txt which returned 404 i remembered i should check for sitemap.xml which can give me informations about users and authors which i can later brute force on login if i don't find any vulnerable theme or plugin.
+But sitemap.xml returned 404 so i ran my tool which enumerates authors and usernames through the archives and posts.
+We got username `admin` which we will note for the case where we don't find any vulnerability.
+For scanning vulnerabilities on wordpress websites we will use `WPscan` which is great enumeration and vulnerability scanning tool.
+Unfortunately we found 39 vulnerabilities which are probably not intentionally left there so we will brute force login with same tool and we can get back to those CVEs later.
+
+Using a `/usr/share/wordlists/rockyou.txt` wordlist we will attack the wp-login.php page which is located in `http://internal.thm/blog/wp-login.php`.
+Bingo! `Valid Combinations Found: Username admin, Password my2boys`
+We will use these given credentials to login on the admin panel
+`admin:my2boys`
+
+## Getting access
+After successfully logging in the admin panel, we get prompted with question if we want to update the admin email or leave it as it is.
+We will skip on this one because our goal is getting webshell or reverse shell.
+For this purposes idea is to edit built-in pages with the malicious code which will execute under condition that we visit website.
